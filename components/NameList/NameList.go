@@ -35,10 +35,9 @@ func (l *buttonLayout) DesiredSize(objects []fyne.CanvasObject, size fyne.Size) 
 }
 
 var colors = []color.RGBA{
-	{R: 176, G: 224, B: 230, A: 255},
-	{R: 0, G: 0, B: 205, A: 255},
-	{R: 0, G: 0, B: 255, A: 255},
-	{R: 0, G: 191, B: 255, A: 255},
+	{R: 0, G: 0, B: 150, A: 255},
+	{R: 0, G: 0, B: 200, A: 255},
+	{R: 0, G: 120, B: 200, A: 255},
 	{R: 30, G: 144, B: 255, A: 255},
 }
 
