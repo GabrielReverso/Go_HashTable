@@ -4,7 +4,9 @@ import (
 	"HashTable/components/CustomIconButton"
 	"HashTable/components/HashTable"
 	"HashTable/components/NameList"
+	"fmt"
 	"image/color"
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -204,6 +206,11 @@ func makeSearchScreen(w fyne.Window, hash_table *HashTable.Hash) fyne.CanvasObje
 	prevButton.Resize(fyne.NewSize(40, 40))
 	prevButton.Move(fyne.NewPos(10, 10))
 
+	titleLabel := canvas.NewText("PROCURAR CONTATO", color.White)
+	titleLabel.TextSize = 25
+	titleLabel.TextStyle.Bold = true
+	titleLabel.Move(fyne.NewPos(260, 20))
+
 	searchLabel := canvas.NewText("Buscar", color.White)
 	searchLabel.TextSize = 20
 	searchLabel.Move(fyne.NewPos(200, 210))
@@ -214,7 +221,9 @@ func makeSearchScreen(w fyne.Window, hash_table *HashTable.Hash) fyne.CanvasObje
 	searchEntry.Move(fyne.NewPos(200, 250))
 
 	searchButton := widget.NewButton("Buscar", func() {
-		// Implement search logic here
+		text := searchEntry.Text
+		screen1 := makeDataScreen(w, hash_table, text)
+		w.SetContent(screen1)
 	})
 	searchButton.Importance = widget.HighImportance
 	searchButton.Move(fyne.NewPos(300, 450))
@@ -223,6 +232,7 @@ func makeSearchScreen(w fyne.Window, hash_table *HashTable.Hash) fyne.CanvasObje
 	return container.NewWithoutLayout(
 		backGround,
 		prevButton,
+		titleLabel,
 		searchLabel,
 		searchEntry,
 		searchButton,
@@ -245,5 +255,103 @@ func makeRemoveScreen(w fyne.Window, hash_table *HashTable.Hash) fyne.CanvasObje
 	return container.NewWithoutLayout(
 		backGround,
 		prevButton,
+	)
+}
+
+/***********************************TELAS INTERMEDIARIAS*************************************/
+
+func makeDataScreen(w fyne.Window, hash_table *HashTable.Hash, nome string) fyne.CanvasObject {
+
+	backGround := canvas.NewRectangle(color.RGBA{R: 2, G: 20, B: 35, A: 255})
+	backGround.Resize(fyne.NewSize(805, 605))
+	backGround.Move(fyne.NewPos(-5, -5))
+
+	prevButton := CustomIconButton.NewIconButton(theme.NavigateBackIcon(), func() {
+		screen1 := makeSearchScreen(w, hash_table)
+		w.SetContent(screen1)
+	})
+	prevButton.Resize(fyne.NewSize(40, 40))
+	prevButton.Move(fyne.NewPos(10, 10))
+
+	titleLabel := canvas.NewText("DADOS CADASTRADOS COM O ESSE NOME", color.White)
+	titleLabel.TextSize = 25
+	titleLabel.TextStyle.Bold = true
+	titleLabel.Move(fyne.NewPos(150, 20))
+
+	data, err := HashTable.BuscaHash(hash_table, nome)
+	if err != nil {
+		data := canvas.NewText("Não há dados cadastrados com esse nome", color.White)
+		data.TextSize = 20
+		data.Move(fyne.NewPos(210, 100))
+		return container.NewWithoutLayout(
+			backGround,
+			prevButton,
+			titleLabel,
+			data,
+		)
+	}
+
+	// Create a circle and initial label for the user
+	circle := canvas.NewCircle(color.RGBA{R: 255, G: 0, B: 0, A: 255})
+	circle.Resize(fyne.NewSize(100, 100))
+	circle.Move(fyne.NewPos(350, 100))
+
+	initial := canvas.NewText(string(data[0][0]), color.White)
+	initial.TextSize = 50
+	initial.Move(fyne.NewPos(385, 115))
+
+	// Create a container to hold the circle and initial
+	userIcon := container.NewWithoutLayout(circle, initial)
+
+	// Create a VBox to hold the user info blocks
+	vbox := container.NewVBox()
+
+	// Iterate over the data and add user info blocks to the VBox
+	for i, str := range data {
+		// Split the string into name, phone, and address
+		parts := strings.Split(str, ",")
+
+		// Add the repetition indicator to the name
+		if i > 0 {
+			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
+		}
+
+		// Create labels for the user's name, phone, and address
+		nameLabel := canvas.NewText(parts[0], color.White)
+		nameLabel.TextSize = 23
+
+		phoneLabel := canvas.NewText(parts[1], color.White)
+		phoneLabel.TextSize = 23
+
+		addressLabel := canvas.NewText(parts[2], color.White)
+		addressLabel.TextSize = 23
+
+		// Create a separator line
+		var separator *canvas.Line
+		if i > 0 {
+			separator = canvas.NewLine(color.RGBA{R: 2, G: 30, B: 80, A: 255})
+			separator.StrokeWidth = 2
+		} else {
+			separator = canvas.NewLine(color.Transparent)
+			separator.StrokeWidth = 2
+		}
+
+		space := canvas.NewRectangle(color.Transparent)
+		space.Resize(fyne.NewSize(10, 5))
+
+		// Add the user info block to the VBox
+		vbox.Add(container.NewVBox(separator, space, space, space, space, container.NewCenter(nameLabel), space, container.NewCenter(phoneLabel), space, container.NewCenter(addressLabel), space, space, space, space))
+	}
+	// Create a scroll container for the VBox
+	scroll := container.NewVScroll(vbox)
+	scroll.Resize(fyne.NewSize(500, 350))
+	scroll.Move(fyne.NewPos(150, 220))
+
+	return container.NewWithoutLayout(
+		backGround,
+		prevButton,
+		userIcon,
+		titleLabel,
+		scroll,
 	)
 }

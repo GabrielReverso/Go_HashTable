@@ -102,7 +102,7 @@ func BuscaHash(hash_table *Hash, Nome_search string) ([]string, error) {
 	// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
 	for current != nil {
 		if current.Nome == Nome_search {
-			data = append(data, fmt.Sprintf("Nome: %s, Endereço: %s, Telefone: %s", current.Nome, current.Endereco, current.Telefone))
+			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
 		}
 		current = current.Next
 	}
