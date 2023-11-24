@@ -1,6 +1,8 @@
 package NameList
 
 import (
+	"HashTable/components/HashTable"
+	"HashTable/components/MakeScreens"
 	"fmt"
 	"image/color"
 	"math/rand"
@@ -49,24 +51,34 @@ func randomColor() color.RGBA {
 	return colors[rand.Intn(len(colors))]
 }
 
-func CreateButtons(names []string) *fyne.Container {
-	objects := make([]fyne.CanvasObject, len(names)*2-1)
+func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fyne.Container {
+	objects := make([]fyne.CanvasObject, len(data)*2-1)
 
-	for i, name := range names {
-		button := widget.NewButton(name, func() { fmt.Println(name) })
+	for i, str := range data {
 
-		circle := canvas.NewCircle(randomColor()) // blue
+		parts := strings.Split(str, ",")
+		if i > 0 {
+			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
+		}
+
+		nome := parts[0]
+		telefone := parts[1]
+		endereco := parts[2]
+
+		button := widget.NewButton(nome, func() { MakeScreens.MakeDataScreen(w, hash_table, nome, telefone, endereco, true) })
+
+		circle := canvas.NewCircle(randomColor())
 		circle.StrokeWidth = 0
 		circle.StrokeColor = color.Black
 
-		label := canvas.NewText(strings.ToUpper(string(name[0])), color.White)
+		label := canvas.NewText(strings.ToUpper(string(str[0])), color.White)
 		label.TextSize = 24
 		label.TextStyle.Bold = true
 
 		container := fyne.NewContainerWithLayout(&buttonLayout{}, circle, label, button)
 		objects[i*2] = container
 
-		if i < len(names)-1 {
+		if i < len(str)-1 {
 			spacer := canvas.NewRectangle(color.Transparent)
 			spacer.SetMinSize(fyne.NewSize(1, 3)) // 3 pixels of height
 			objects[i*2+1] = spacer

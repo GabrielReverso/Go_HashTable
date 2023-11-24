@@ -3,8 +3,6 @@ package HashTable
 import (
 	"errors"
 	"fmt"
-	"sort"
-	"strconv"
 )
 
 // Estrutura Hash que contém um slice de VetorHash, um contador de quantidade, e um vetor para salvar indices adicionados
@@ -127,30 +125,37 @@ func BuscaTodosHash(hash_table *Hash) ([]string, error) {
 
 		// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
 		for current != nil {
-			data = append(data, current.Nome)
+			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
 			current = current.Next
 		}
 	}
 
-	// Crie um mapa para contar as ocorrências de cada string
-	counts := make(map[string]int)
-	for _, str := range data {
-		counts[str]++
-	}
-
-	// Percorra o slice e adicione o indicador às strings repetidas
-	for i, str := range data {
-		if counts[str] > 1 {
-			data[i] = str + " (" + strconv.Itoa(counts[str]) + ")"
-			counts[str]--
-		}
-	}
-
-	// Organize o slice em ordem alfabética
-	sort.Strings(data)
-
 	// Retorna a slice de dados
 	return data, nil
+}
+
+// Função para mostrar um dado especifico da Hash
+func BuscaEspecificoHash(hash_table *Hash, nome string, telefone string, endereco string) ([]string, error) {
+
+	// Cria uma slice para armazenar os dados
+	var data []string
+
+	Indice := Peso_strings(nome, hash_table)
+
+	// Começa a busca no primeiro Dados no índice
+	current := hash_table.Indices[Indice].Dados_Usuario
+
+	// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
+	for current != nil {
+		if current.Nome == nome && current.Telefone == telefone && current.Endereco == endereco {
+			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
+			return data, nil
+		}
+		current = current.Next
+	}
+
+	// Retorna a string de dados
+	return nil, errors.New("nenhum dado na Hash")
 }
 
 func Rehash(hash_table *Hash, novoNome string) error {
@@ -192,6 +197,135 @@ func Rehash(hash_table *Hash, novoNome string) error {
 	}
 
 	return nil
+}
+
+func DeleteHash(hash_table *Hash, Nome_Delete string, Telefone_Delete string) {
+	Position := Peso_strings(Nome_Delete, hash_table)
+	Hash := &hash_table.Indices[Position]
+
+	count := 0
+
+	current := Hash.Dados_Usuario
+	var prev *Dados
+
+	if Hash.Verificador_colisao {
+		for current != nil {
+			if current != nil && count == 0 && current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
+				Hash.Dados_Usuario = current.Next
+				count = 1
+				return
+			} else {
+				if current == nil {
+					return
+				}
+				if current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
+					prev.Next = current.Next
+					current = current.Next
+				}
+			}
+
+			if current == nil {
+				return
+			}
+			count = 1
+			prev = current
+			current = current.Next
+
+		}
+
+		Hash.Verificador_colisao = false
+		current = Hash.Dados_Usuario
+		for current != nil {
+			if current.Next != nil && current.Nome != current.Next.Nome {
+				Hash.Verificador_colisao = true
+			}
+			current = current.Next
+		}
+	} else {
+		if current.Next == nil {
+			Hash.Dados_Usuario = nil
+			Hash.Verificador_colisao = false
+			Referencias_auxiliar := make([]int, 0)
+
+			for _, conteudo := range hash_table.Referencias {
+				if conteudo != Position {
+					Referencias_auxiliar = append(Referencias_auxiliar, conteudo)
+				}
+			}
+			hash_table.Referencias = Referencias_auxiliar
+			return
+		}
+		current = Hash.Dados_Usuario
+		for current != nil {
+			if current != nil && count == 0 && current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
+				Hash.Dados_Usuario = current.Next
+				count = 1
+				return
+			} else {
+				if current == nil {
+					return
+				}
+				if current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
+					prev.Next = current.Next
+					current = current.Next
+				}
+			}
+
+			if current == nil {
+				return
+			}
+			count = 1
+			prev = current
+			current = current.Next
+
+		}
+
+	}
+}
+
+func DeleteAllHash(hash_table *Hash, Nome_Delete string) {
+	Position := Peso_strings(Nome_Delete, hash_table)
+	Hash := &hash_table.Indices[Position]
+
+	if Hash.Verificador_colisao {
+		current := Hash.Dados_Usuario
+		var prev *Dados
+
+		for current != nil {
+			if current.Nome == Nome_Delete {
+				if prev != nil {
+					prev.Next = current.Next
+				} else {
+					Hash.Dados_Usuario = current.Next
+				}
+			} else {
+				prev = current
+			}
+			if current != nil {
+				current = current.Next
+			}
+		}
+
+		current = Hash.Dados_Usuario
+		hash_table.Indices[Position].Verificador_colisao = false
+		for current != nil {
+			if current.Next != nil && current.Nome != current.Next.Nome {
+				hash_table.Indices[Position].Verificador_colisao = true
+			}
+			current = current.Next
+		}
+
+	} else {
+		Hash.Dados_Usuario = nil
+		Hash.Verificador_colisao = false
+		Referencias_auxiliar := make([]int, len(hash_table.Referencias))
+		for _, Conteudo := range hash_table.Referencias {
+			if Conteudo != Position {
+				Referencias_auxiliar = append(Referencias_auxiliar, Conteudo)
+			}
+		}
+		hash_table.Referencias = Referencias_auxiliar
+	}
 }
 
 /***************************************AUXILIARES********************************************/
