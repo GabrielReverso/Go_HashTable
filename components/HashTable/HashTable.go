@@ -105,6 +105,11 @@ func BuscaHash(hash_table *Hash, Nome_search string) ([]string, error) {
 		current = current.Next
 	}
 
+	// If no data matched the searched name, return an error
+	if len(data) == 0 {
+		return nil, errors.New("nenhum dado corresponde ao informado")
+	}
+
 	// Retorna a slice de dados
 	return data, nil
 }

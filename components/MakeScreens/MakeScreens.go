@@ -5,7 +5,6 @@ import (
 	"HashTable/components/HashTable"
 	"math/rand"
 	"sort"
-	"strconv"
 	"time"
 
 	"fmt"
@@ -405,6 +404,7 @@ func MakeSelectScreen(w fyne.Window, hash_table *HashTable.Hash, nome string) fy
 	titleLabel.Move(fyne.NewPos(185, 20))
 
 	data, err := HashTable.BuscaHash(hash_table, nome)
+	fmt.Println(data, err)
 	if err != nil {
 		data := canvas.NewText("Não há dados cadastrados com esse nome", color.White)
 		data.TextSize = 20
@@ -541,22 +541,27 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 	// Crie um mapa para contar as ocorrências de cada string
 	counts := make(map[string]int)
 	for _, str := range data {
-		counts[str]++
-	}
-
-	// Percorra o slice e adicione o indicador às strings repetidas
-	for i, str := range data {
-		if counts[str] > 1 {
-			data[i] = str + " (" + strconv.Itoa(counts[str]) + ")"
-			counts[str]--
-		}
+		parts := strings.Split(str, ",")
+		counts[parts[0]]++
 	}
 
 	// Organize o slice em ordem alfabética
 	sort.Strings(data)
 
 	// Crie um layout para os botões
-	objects := make([]fyne.CanvasObject, len(data)*2-1)
+	var objects []fyne.CanvasObject
+	if len(data) > 0 {
+		objects = make([]fyne.CanvasObject, len(data)*2-1)
+	} else {
+		//objects = make([]fyne.CanvasObject, 0)
+		data := canvas.NewText("Não há dados cadastrados", color.White)
+		data.TextSize = 20
+		data.Move(fyne.NewPos(265, 100))
+		return container.NewWithoutLayout(
+			data,
+		)
+	}
+
 	for i, str := range data {
 
 		parts := strings.Split(str, ",")
@@ -565,8 +570,9 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 		telefone := parts[1]
 		endereco := parts[2]
 
-		if i > 0 {
+		if i > 0 && counts[parts[0]] > 1 {
 			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
+			counts[parts[0]]--
 		}
 
 		button := widget.NewButton(parts[0], func() {

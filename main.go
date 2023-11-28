@@ -19,10 +19,10 @@ func main() {
 	window.SetFixedSize(true)
 
 	hash := HashTable.CriaHash()
-
-	HashTable.InserirDados(hash, "Gabriel Reverso", "Tel1", "End1")
-	HashTable.InserirDados(hash, "Gabriel Reverso", "Tel2", "End2")
-	HashTable.InserirDados(hash, "Gabriel Reverso", "Tel3", "End3")
+	/*
+		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel1", "End1")
+		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel2", "End2")
+		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel3", "End3") */
 
 	screen1 := MakeScreens.MakeMainScreen(window, hash)
 
