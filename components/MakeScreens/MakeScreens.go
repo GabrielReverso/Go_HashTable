@@ -538,13 +538,6 @@ func randomColor() color.RGBA {
 
 func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fyne.Container {
 
-	// Crie um mapa para contar as ocorrências de cada string
-	counts := make(map[string]int)
-	for _, str := range data {
-		parts := strings.Split(str, ",")
-		counts[parts[0]]++
-	}
-
 	// Organize o slice em ordem alfabética
 	sort.Strings(data)
 
@@ -562,7 +555,10 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 		)
 	}
 
-	for i, str := range data {
+	prevName := ""
+	i := 1
+
+	for j, str := range data {
 
 		parts := strings.Split(str, ",")
 
@@ -570,10 +566,14 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 		telefone := parts[1]
 		endereco := parts[2]
 
-		if i > 0 && counts[parts[0]] > 1 {
-			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
-			counts[parts[0]]--
+		if nome == prevName {
+			i++
+			parts[0] = fmt.Sprintf("%s (%d)", nome, i)
+		} else {
+			i = 1
 		}
+
+		prevName = nome
 
 		button := widget.NewButton(parts[0], func() {
 			screen := MakeDataScreen(w, hash_table, nome, telefone, endereco, true)
@@ -589,12 +589,12 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 		label.TextStyle.Bold = true
 
 		container := fyne.NewContainerWithLayout(&buttonLayout{}, circle, label, button)
-		objects[i*2] = container
+		objects[j*2] = container
 
-		if i < len(data)-1 {
+		if j < len(data)-1 {
 			spacer := canvas.NewRectangle(color.Transparent)
 			spacer.SetMinSize(fyne.NewSize(1, 3)) // 3 pixels of height
-			objects[i*2+1] = spacer
+			objects[j*2+1] = spacer
 		}
 	}
 
