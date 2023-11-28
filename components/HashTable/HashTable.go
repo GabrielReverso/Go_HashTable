@@ -100,7 +100,7 @@ func BuscaHash(hash_table *Hash, Nome_search string) ([]string, error) {
 	// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
 	for current != nil {
 		if current.Nome == Nome_search {
-			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
+			data = append(data, fmt.Sprintf("%s_%s_%s", current.Nome, current.Telefone, current.Endereco))
 		}
 		current = current.Next
 	}
@@ -130,7 +130,7 @@ func BuscaTodosHash(hash_table *Hash) ([]string, error) {
 
 		// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
 		for current != nil {
-			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
+			data = append(data, fmt.Sprintf("%s_%s_%s", current.Nome, current.Telefone, current.Endereco))
 			current = current.Next
 		}
 	}
@@ -153,7 +153,7 @@ func BuscaEspecificoHash(hash_table *Hash, nome string, telefone string, enderec
 	// Percorre a lista ligada no índice, adicionando os dados que correspondem ao nome buscado à slice
 	for current != nil {
 		if current.Nome == nome && current.Telefone == telefone && current.Endereco == endereco {
-			data = append(data, fmt.Sprintf("%s,%s,%s", current.Nome, current.Telefone, current.Endereco))
+			data = append(data, fmt.Sprintf("%s_%s_%s", current.Nome, current.Telefone, current.Endereco))
 			return data, nil
 		}
 		current = current.Next

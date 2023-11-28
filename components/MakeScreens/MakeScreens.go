@@ -346,7 +346,7 @@ func MakeDataScreen(w fyne.Window, hash_table *HashTable.Hash, nome string, tele
 	vbox := container.NewVBox()
 
 	for i, str := range data {
-		parts := strings.Split(str, ",")
+		parts := strings.Split(str, "_")
 		if i > 0 {
 			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
 		}
@@ -440,7 +440,7 @@ func MakeSelectScreen(w fyne.Window, hash_table *HashTable.Hash, nome string) fy
 
 	for i, str := range data {
 
-		parts := strings.Split(str, ",")
+		parts := strings.Split(str, "_")
 
 		if i > 0 {
 			parts[0] = fmt.Sprintf("%s (%d)", parts[0], i+1)
@@ -560,7 +560,7 @@ func CreateButtons(w fyne.Window, hash_table *HashTable.Hash, data []string) *fy
 
 	for j, str := range data {
 
-		parts := strings.Split(str, ",")
+		parts := strings.Split(str, "_")
 
 		nome := parts[0]
 		telefone := parts[1]
