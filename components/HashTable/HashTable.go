@@ -29,8 +29,8 @@ type Dados struct {
 // Função para criar um novo Hash
 func CriaHash() *Hash {
 
-	// Cria um novo Hash com um slice de VetorHash de tamanho 250
-	hash_Table := &Hash{Indices: make([]VetorHash, 5), Referencias: make([]int, 0), Quantidade: 0}
+	// Cria um novo Hash com um slice de VetorHash de tamanho inicial 20
+	hash_Table := &Hash{Indices: make([]VetorHash, 20), Referencias: make([]int, 0), Quantidade: 0}
 
 	return hash_Table
 }
@@ -105,7 +105,7 @@ func BuscaHash(hash_table *Hash, Nome_search string) ([]string, error) {
 		current = current.Next
 	}
 
-	// If no data matched the searched name, return an error
+	// Se nenhum dado for igual ao procurado, returna um erro
 	if len(data) == 0 {
 		return nil, errors.New("nenhum dado corresponde ao informado")
 	}
@@ -206,7 +206,7 @@ func Rehash(hash_table *Hash, novoNome string) error {
 
 // DeleteHash é uma função que remove um usuário específico da tabela hash.
 func DeleteHash(hash_table *Hash, Nome_Delete string, Telefone_Delete string) {
-    // Calcula a posição na tabela hash onde o usuário deve estar.
+	// Calcula a posição na tabela hash onde o usuário deve estar.
 	Position := Peso_strings(Nome_Delete, hash_table)
 	// Cria um ponteiro para o vetor hash na posição calculada.
 	Hash := &hash_table.Indices[Position]
@@ -290,9 +290,6 @@ func DeleteHash(hash_table *Hash, Nome_Delete string, Telefone_Delete string) {
 		// Este loop percorre a lista ligada na posição calculada.
 		for current != nil {
 			// Se o nome e o telefone do usuário atual correspondem aos dados a serem excluídos e o contador é zero
-			
-			
-
 
 			// o próximo usuário na lista ligada se torna o primeiro usuário.
 			if current != nil && count == 0 && current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
@@ -383,8 +380,8 @@ func DeleteAllHash(hash_table *Hash, Nome_Delete string) {
 		// Este loop percorre o slice de referências na tabela hash.
 		for _, Conteudo := range hash_table.Referencias {
 			// Se o conteúdo atual não é igual à posição calculada, o conteúdo é adicionado ao slice auxiliar
-			
-						if Conteudo != Position {
+
+			if Conteudo != Position {
 				Referencias_auxiliar = append(Referencias_auxiliar, Conteudo)
 			}
 		}

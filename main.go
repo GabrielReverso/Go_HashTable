@@ -11,21 +11,25 @@ import (
 
 func main() {
 
+	// Cria o aplicativo
 	application := app.New()
 	application.Settings().SetTheme(theme.DarkTheme())
-	window := application.NewWindow("Lista Telefônica")
+
+	// Cria a janela do aplicativo
+	window := application.NewWindow("Lista Hash")
 	window.CenterOnScreen()
 	window.Resize(fyne.NewSize(800, 600))
 	window.SetFixedSize(true)
 
+	// Cria a hash
 	hash := HashTable.CriaHash()
-	/*
-		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel1", "End1")
-		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel2", "End2")
-		HashTable.InserirDados(hash, "Gabriel Reverso", "Tel3", "End3") */
 
+	// Obtem o conteúdo da tela inicial
 	screen1 := MakeScreens.MakeMainScreen(window, hash)
 
+	// Define o conteúdo inicial
 	window.SetContent(screen1)
+
+	// Executa o aplicativo
 	window.ShowAndRun()
 }
