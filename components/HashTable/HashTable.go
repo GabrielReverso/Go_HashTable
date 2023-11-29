@@ -204,131 +204,191 @@ func Rehash(hash_table *Hash, novoNome string) error {
 	return nil
 }
 
+// DeleteHash é uma função que remove um usuário específico da tabela hash.
 func DeleteHash(hash_table *Hash, Nome_Delete string, Telefone_Delete string) {
+    // Calcula a posição na tabela hash onde o usuário deve estar.
 	Position := Peso_strings(Nome_Delete, hash_table)
+	// Cria um ponteiro para o vetor hash na posição calculada.
 	Hash := &hash_table.Indices[Position]
 
+	// Inicializa um contador.
 	count := 0
 
+	// Cria um ponteiro para o primeiro usuário na lista ligada na posição calculada.
 	current := Hash.Dados_Usuario
+	// Cria um ponteiro para o usuário anterior na lista ligada.
 	var prev *Dados
 
+	// Se houve uma colisão na posição calculada, o código dentro deste bloco if será executado.
 	if Hash.Verificador_colisao {
+		// Este loop percorre a lista ligada na posição calculada.
 		for current != nil {
+			// Se o nome e o telefone do usuário atual correspondem aos dados a serem excluídos e o contador é zero,
+			// o próximo usuário na lista ligada se torna o primeiro usuário.
 			if current != nil && count == 0 && current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
 				Hash.Dados_Usuario = current.Next
 				count = 1
 				return
 			} else {
+				// Se o usuário atual é nil, a função retorna.
 				if current == nil {
 					return
 				}
+				// Se o nome e o telefone do usuário atual correspondem aos dados a serem excluídos,
+				// o próximo usuário na lista ligada se torna o próximo usuário do usuário anterior.
 				if current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
 					prev.Next = current.Next
 					current = current.Next
 				}
 			}
 
+			// Se o usuário atual é nil, a função retorna.
 			if current == nil {
 				return
 			}
+			// O contador é incrementado e os ponteiros para o usuário atual e anterior são atualizados.
 			count = 1
 			prev = current
 			current = current.Next
-
 		}
 
+		// O verificador de colisão é definido como falso.
 		Hash.Verificador_colisao = false
+		// O ponteiro para o usuário atual é redefinido para o primeiro usuário na lista ligada.
 		current = Hash.Dados_Usuario
+		// Este loop verifica se ainda há uma colisão na posição calculada.
 		for current != nil {
+			// Se o nome do próximo usuário é diferente do nome do usuário atual, o verificador de colisão é definido como verdadeiro.
 			if current.Next != nil && current.Nome != current.Next.Nome {
 				Hash.Verificador_colisao = true
 			}
+			// O ponteiro para o usuário atual é atualizado para o próximo usuário na lista ligada.
 			current = current.Next
 		}
 	} else {
+		// Se não houve uma colisão na posição calculada, o código dentro deste bloco else será executado.
+		// Se o próximo usuário na lista ligada é nil, o primeiro usuário na lista ligada é definido como nil e o verificador de colisão é definido como falso.
 		if current.Next == nil {
 			Hash.Dados_Usuario = nil
 			Hash.Verificador_colisao = false
+			// Cria um slice auxiliar para armazenar as referências.
 			Referencias_auxiliar := make([]int, 0)
 
+			// Este loop percorre o slice de referências na tabela hash.
 			for _, conteudo := range hash_table.Referencias {
+				// Se o conteúdo atual não é igual à posição calculada, o conteúdo é adicionado ao slice auxiliar.
 				if conteudo != Position {
 					Referencias_auxiliar = append(Referencias_auxiliar, conteudo)
 				}
 			}
+			// O slice de referências na tabela hash é atualizado para o slice auxiliar.
 			hash_table.Referencias = Referencias_auxiliar
 			return
 		}
+		// O ponteiro para o usuário atual é redefinido para o primeiro usuário na lista ligada.
 		current = Hash.Dados_Usuario
+		// Este loop percorre a lista ligada na posição calculada.
 		for current != nil {
+			// Se o nome e o telefone do usuário atual correspondem aos dados a serem excluídos e o contador é zero
+			
+			
+
+
+			// o próximo usuário na lista ligada se torna o primeiro usuário.
 			if current != nil && count == 0 && current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
 				Hash.Dados_Usuario = current.Next
 				count = 1
 				return
 			} else {
+				// Se o usuário atual é nil, a função retorna.
 				if current == nil {
 					return
 				}
+				// Se o nome e o telefone do usuário atual correspondem aos dados a serem excluídos,
+				// o próximo usuário na lista ligada se torna o próximo usuário do usuário anterior.
 				if current.Nome == Nome_Delete && current.Telefone == Telefone_Delete {
 					prev.Next = current.Next
 					current = current.Next
 				}
 			}
 
+			// Se o usuário atual é nil, a função retorna.
 			if current == nil {
 				return
 			}
+			// O contador é incrementado e os ponteiros para o usuário atual e anterior são atualizados.
 			count = 1
 			prev = current
 			current = current.Next
-
 		}
-
 	}
 }
 
+// DeleteAllHash é uma função que remove todos os usuários com um nome específico da tabela hash.
 func DeleteAllHash(hash_table *Hash, Nome_Delete string) {
+	// Calcula a posição na tabela hash onde os usuários devem estar.
 	Position := Peso_strings(Nome_Delete, hash_table)
+	// Cria um ponteiro para o vetor hash na posição calculada.
 	Hash := &hash_table.Indices[Position]
 
+	// Se houve uma colisão na posição calculada, o código dentro deste bloco if será executado.
 	if Hash.Verificador_colisao {
+		// Cria um ponteiro para o primeiro usuário na lista ligada na posição calculada.
 		current := Hash.Dados_Usuario
+		// Cria um ponteiro para o usuário anterior na lista ligada.
 		var prev *Dados
 
+		// Este loop percorre a lista ligada na posição calculada.
 		for current != nil {
+			// Se o nome do usuário atual corresponde ao nome a ser excluído, o código dentro deste bloco if será executado.
 			if current.Nome == Nome_Delete {
+				// Se o usuário anterior não é nil, o próximo usuário na lista ligada se torna o próximo usuário do usuário anterior.
+				// Caso contrário, o próximo usuário na lista ligada se torna o primeiro usuário.
 				if prev != nil {
 					prev.Next = current.Next
 				} else {
 					Hash.Dados_Usuario = current.Next
 				}
 			} else {
+				// Se o nome do usuário atual não corresponde ao nome a ser excluído, o usuário atual se torna o usuário anterior.
 				prev = current
 			}
+			// Se o usuário atual não é nil, o ponteiro para o usuário atual é atualizado para o próximo usuário na lista ligada.
 			if current != nil {
 				current = current.Next
 			}
 		}
 
+		// O ponteiro para o usuário atual é redefinido para o primeiro usuário na lista ligada.
 		current = Hash.Dados_Usuario
+		// O verificador de colisão é definido como falso.
 		hash_table.Indices[Position].Verificador_colisao = false
+		// Este loop verifica se ainda há uma colisão na posição calculada.
 		for current != nil {
+			// Se o nome do próximo usuário é diferente do nome do usuário atual, o verificador de colisão é definido como verdadeiro.
 			if current.Next != nil && current.Nome != current.Next.Nome {
 				hash_table.Indices[Position].Verificador_colisao = true
 			}
+			// O ponteiro para o usuário atual é atualizado para o próximo usuário na lista ligada.
 			current = current.Next
 		}
 
 	} else {
+		// Se não houve uma colisão na posição calculada, o código dentro deste bloco else será executado.
+		// O primeiro usuário na lista ligada é definido como nil e o verificador de colisão é definido como falso.
 		Hash.Dados_Usuario = nil
 		Hash.Verificador_colisao = false
+		// Cria um slice auxiliar para armazenar as referências.
 		Referencias_auxiliar := make([]int, len(hash_table.Referencias))
+		// Este loop percorre o slice de referências na tabela hash.
 		for _, Conteudo := range hash_table.Referencias {
-			if Conteudo != Position {
+			// Se o conteúdo atual não é igual à posição calculada, o conteúdo é adicionado ao slice auxiliar
+			
+						if Conteudo != Position {
 				Referencias_auxiliar = append(Referencias_auxiliar, Conteudo)
 			}
 		}
+		// O slice de referências na tabela hash é atualizado para o slice auxiliar.
 		hash_table.Referencias = Referencias_auxiliar
 	}
 }
